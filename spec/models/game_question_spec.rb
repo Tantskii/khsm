@@ -29,8 +29,9 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.answer_correct?('b')).to be_truthy
     end
 
-
-    #------ Вариант решения ДЗ --------------------
+    it 'correct .correct_answer_key' do
+      expect(game_question.correct_answer_key).to eq('b')
+    end
 
     # тест на наличие методов делегатов level и text
     it 'correct .level & .text delegates' do
