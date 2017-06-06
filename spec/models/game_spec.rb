@@ -76,7 +76,6 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.finished?).to be_falsey
     end
 
-
     it 'take_money! finishes the game' do
       # берем игру и отвечаем на текущий вопрос
       q = game_w_questions.current_game_question
@@ -94,7 +93,6 @@ RSpec.describe Game, type: :model do
       expect(user.balance).to eq prize
     end
   end
-
 
   # группа тестов на проверку статуса игры
   context '.status' do
@@ -126,15 +124,12 @@ RSpec.describe Game, type: :model do
   end
 
   it 'correct .current_game_question' do
-    expect(game_w_questions.current_game_question).to eq(game_w_questions.game_questions.first)
+    game_w_questions.current_level = 10
+    expect(game_w_questions.current_game_question).to eq(game_w_questions.game_questions[10])
   end
 
   it 'correct .previous_level' do
-    q = game_w_questions.current_game_question
-    level = game_w_questions.current_level
-
-    game_w_questions.answer_current_question!(q.correct_answer_key)
-
-    expect(game_w_questions.previous_level).to eq level
+    game_w_questions.current_level = 10
+    expect(game_w_questions.previous_level).to eq(9)
   end
 end
