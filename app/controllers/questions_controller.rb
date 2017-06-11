@@ -1,3 +1,9 @@
+# (c) goodprogrammer.ru
+#
+# Админский контроллер, только для наполнения базы вопросов с помощью файлов
+# определенного формата
+# Создает новую игру, обновляет статус игры по ответам юзера, выдает подсказки
+#
 class QuestionsController < ApplicationController
   # проверяем залогинен ли юзер
   before_action :authenticate_user!
@@ -13,7 +19,7 @@ class QuestionsController < ApplicationController
   # POST /questions
   # Обработка формы, содержащей файл с вопросами и поле - уровень
   def create
-    level = params[:questions_level].to_i
+    level  = params[:questions_level].to_i
     q_file = params[:questions_file]
 
     # читаем содержимое файла в массив
@@ -53,10 +59,10 @@ class QuestionsController < ApplicationController
     failed = 0
     ActiveRecord::Base.transaction do
       lines.each do |line|
-        ar = line.split('|')
-        q = Question.create(
-            level: level,
-            text: ar[0].squish,
+        ar     = line.split('|')
+        q      = Question.create(
+            level:   level,
+            text:    ar[0].squish,
             answer1: ar[1].squish,
             answer2: ar[2].squish,
             answer3: ar[3].squish,

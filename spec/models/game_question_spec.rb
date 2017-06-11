@@ -17,11 +17,11 @@ RSpec.describe GameQuestion, type: :model do
     # Тест на правильную генерацию хэша с вариантами
     it 'correct .variants' do
       expect(game_question.variants).to eq(
-        'a' => game_question.question.answer2,
-        'b' => game_question.question.answer1,
-        'c' => game_question.question.answer4,
-        'd' => game_question.question.answer3
-      )
+                                            'a' => game_question.question.answer2,
+                                            'b' => game_question.question.answer1,
+                                            'c' => game_question.question.answer4,
+                                            'd' => game_question.question.answer3
+                                        )
     end
 
     it 'correct .answer_correct?' do
@@ -37,6 +37,19 @@ RSpec.describe GameQuestion, type: :model do
     it 'correct .level & .text delegates' do
       expect(game_question.text).to eq(game_question.question.text)
       expect(game_question.level).to eq(game_question.question.level)
+    end
+  end
+
+  context 'user helpers' do
+    it 'correct audience_help' do
+      expect(game_question.help_hash).not_to include(:audience_help)
+
+      game_question.add_audience_help
+
+      expect(game_question.help_hash).to include(:audience_help)
+      expect(game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
+
+      expect(response).to redirect_to(game_path(game))
     end
   end
 end
