@@ -150,5 +150,17 @@ RSpec.describe GamesController, type: :controller do
       expect(response).to redirect_to(game_path(game_w_questions))
       expect(flash[:alert]).to be
     end
+
+    it 'use fifty_fifty' do
+      game_w_questions.update_attribute(:current_level, 2)
+
+      put :help, id: game_w_questions.id, help_type: :fifty_fifty
+      expect(response).to redirect_to(game_path(game_w_questions))
+      expect(flash[:info]).to be
+
+      put :help, id: game_w_questions.id, help_type: :fifty_fifty
+      expect(response).to redirect_to(game_path(game_w_questions))
+      expect(flash[:alert]).to be
+    end
   end
 end
