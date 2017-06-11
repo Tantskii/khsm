@@ -38,6 +38,24 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.text).to eq(game_question.question.text)
       expect(game_question.level).to eq(game_question.question.level)
     end
+
+    it 'correct .help_hash' do
+      # на фабрике у нас изначально хэш пустой
+      expect(game_question.help_hash).to eq({})
+
+      # добавляем пару ключей
+      game_question.help_hash[:some_key1] = 'blabla1'
+      game_question.help_hash['some_key2'] = 'blabla2'
+
+      # сохраняем модель и ожидаем сохранения хорошего
+      expect(game_question.save).to be_truthy
+
+      # загрузим этот же вопрос из базы для чистоты эксперимента
+      gq = GameQuestion.find(game_question.id)
+
+      # проверяем новые значение хэша
+      expect(gq.help_hash).to eq({some_key1: 'blabla1', 'some_key2' => 'blabla2'})
+    end
   end
 
   context 'user helpers' do
@@ -47,9 +65,36 @@ RSpec.describe GameQuestion, type: :model do
       game_question.add_audience_help
 
       expect(game_question.help_hash).to include(:audience_help)
-      expect(game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
 
-      expect(response).to redirect_to(game_path(game))
+      ah = game_question.help_hash[:audience_help]
+      expect(ah.keys).to contain_exactly('a', 'b', 'c', 'd')
+    end
+
+    it 'correct fifty_fifty' do
+      expect(game_question.help_hash).not_to include(:fifty_fifty)
+
+      game_question.add_fifty_fifty
+
+      expect(game_question.help_hash).to include(:fifty_fifty)
+
+      new_answers = game_question.help_hash[:fifty_fifty]
+
+      expect(game_question.answer_correct?(new_answers[0])).to be_truthy
+      expect(game_question.answer_correct?(new_answers[1])).to be_falsey
+      expect(new_answers.size).to eq 2
+    end
+
+    it 'correct friend_call' do
+      expect(game_question.help_hash).not_to include(:friend_call)
+
+      game_question.add_friend_call
+
+      expect(game_question.help_hash).to include(:friend_call)
+
+      friend_answer = game_question.help_hash[:friend_call]
+
+      expect(friend_answer.class).to eq String
+      expect(%w(a b c d)).to include friend_answer[-1].downcase
     end
   end
 end
