@@ -28,6 +28,38 @@ RSpec.describe GamesController, type: :controller do
       expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
       expect(flash[:alert]).to be # во flash должен быть прописана ошибка
     end
+
+    it 'kick because of #create' do
+      post :create
+
+      expect(response.status).not_to eq(200)
+      expect(response).to redirect_to(new_user_session_path)
+      expect(flash[:alert]).to be
+    end
+
+    it 'kick because of #take_money' do
+      put :take_money, id: game_w_questions.id
+
+      expect(response.status).not_to eq(200)
+      expect(response).to redirect_to(new_user_session_path)
+      expect(flash[:alert]).to be
+    end
+
+    it 'kick because of #answer' do
+      put :answer, id: game_w_questions.id, letter: 'a'
+
+      expect(response.status).not_to eq(200)
+      expect(response).to redirect_to(new_user_session_path)
+      expect(flash[:alert]).to be
+    end
+
+    it 'kick because of #help' do
+      put :help, id: game_w_questions.id, help_type: :audience_help
+
+      expect(response.status).not_to eq(200)
+      expect(response).to redirect_to(new_user_session_path)
+      expect(flash[:alert]).to be
+    end
   end
 
   # группа тестов на экшены контроллера, доступных залогиненным юзерам
@@ -74,18 +106,6 @@ RSpec.describe GamesController, type: :controller do
       expect(flash.empty?).to be_truthy # удачный ответ не заполняет flash
     end
 
-    it '#show alien game' do
-      # создаем новую игру, юзер не прописан, будет создан фабрикой новый
-      alien_game = FactoryGirl.create(:game_with_questions)
-
-      # пробуем зайти на эту игру текущий залогиненным user
-      get :show, id: alien_game.id
-
-      expect(response.status).not_to eq(200) # статус не 200 ОК
-      expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to be # во flash должен быть прописана ошибка
-    end
-    
     it 'answers incorrect' do
       game_w_questions.update_attribute(:current_level, 2)
 
