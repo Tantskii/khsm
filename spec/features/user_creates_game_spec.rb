@@ -3,7 +3,7 @@ require 'rails_helper'
 
 # Начинаем описывать функционал, связанный с созданием игры
 RSpec.feature 'USER creates a game', type: :feature do
-  let(:user) { FactoryGirl.create :user, name: 'Николай' }
+  let(:user) { FactoryGirl.create :user, name: 'Николай', id: 0 }
 
   let!(:questions) do
     (0..14).to_a.map do |i|
@@ -57,7 +57,18 @@ RSpec.feature 'USER creates a game', type: :feature do
     expect(page).to have_content 'Объект2'
     expect(page).to have_content 'Объект1'
     expect(page).to have_content 'Николай'
+  end
 
-    save_and_open_page
+  scenario 'user gives incorrect answer' do
+    visit '/'
+
+    click_link 'Новая игра'
+    click_link '1380'
+    click_link '1380'
+    click_link '1380'
+    click_link '1381'
+
+    expect(page).to have_current_path '/users/0'
+    expect(page).to have_content 'Правильный ответ: 1380. Игра закончена, ваш приз 0 ₽'
   end
 end
